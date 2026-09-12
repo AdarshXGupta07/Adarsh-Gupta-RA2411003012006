@@ -8,21 +8,21 @@ public class Bank {
         this.repository = repository;
     }
 
-    public void deposit(BankAccount account, double amount) {
+    public void deposit(Account account, double amount) {
         if (account.deposit(amount)) {
             notifier.send("Deposit of Rs. " + amount + " was successful");
             repository.save(account);
         }
     }
 
-    public void withdraw(BankAccount account, double amount) {
+    public void withdraw(Withdrawable account, double amount) {
         if (account.withdraw(amount)) {
             notifier.send("Withdrawal of Rs. " + amount + " was successful");
             repository.save(account);
         }
     }
 
-    public void showInterest(BankAccount account, InterestPolicy policy) {
+    public void showInterest(Account account, InterestPolicy policy) {
         double interest = policy.calculate(account.getBalance());
         System.out.println("Interest for account " + account.getAccountNumber() + " is Rs. " + interest);
     }

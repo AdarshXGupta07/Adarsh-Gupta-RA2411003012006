@@ -57,3 +57,57 @@ not opened at all, and the InterestPolicy interface stayed the same.
 The NotificationService change works the same way. Bank asks for a NotificationService in its
 constructor, so adding SMSNotificationService was a new file plus one line in Main, and nothing
 inside Bank had to move.
+
+
+Section 3 - LSP
+
+
+Q1. Rectangle and Square run
+
+Plain rectangle area: 200
+Expected area: 200
+Actual area: 400
+
+The same two calls, setWidth(10) then setHeight(20), give 200 on a Rectangle and 400 on a Square
+that is being held in a Rectangle variable.
+
+
+Q2. Why the Square breaks LSP
+
+Code that holds a Rectangle assumes width and height are two independent things, so setting the
+height is not supposed to change the width. Square keeps its own rule that all four sides stay
+equal, so its setHeight quietly changes the width too. The caller did nothing wrong, it just got
+a subclass that does not keep the promise the parent made, so the area comes out wrong instead
+of the code failing loudly.
+
+
+Q3. The crash from the loop
+
+The before folder has the broken version. Account has a normal withdraw, FixedDepositAccount
+extends it and overrides withdraw to throw UnsupportedOperationException. BeforeMain puts a
+SavingsAccount and a FixedDepositAccount in one List<Account> and withdraws from each one.
+
+Output:
+
+Running the nightly withdrawal job
+Withdrew Rs. 500.0 from account 101
+Exception in thread "main" java.lang.UnsupportedOperationException: Fixed deposits cannot be
+withdrawn early
+        at FixedDepositAccount.withdraw(FixedDepositAccount.java:8)
+        at BeforeMain.main(BeforeMain.java:14)
+
+The savings withdrawal went through and then the loop died on the fixed deposit, so "Job
+finished" never printed. One bad account in the list killed the whole batch, and the accounts
+after it were never touched.
+
+
+Q5. Wrap-up
+
+Making FixedDepositAccount implement Withdrawable and throw would compile, but LSP says any place
+that takes a Withdrawable must keep working if you hand it any Withdrawable. A fixed deposit that
+blows up on withdraw does not keep that promise, so the loop still crashes and the compiler still
+says everything is fine. The type would be advertising a service it cannot actually provide, and
+the only way callers could protect themselves is by checking the real type or wrapping every call
+in try/catch, which is the design telling you the hierarchy is wrong. Leaving Withdrawable off
+FixedDepositAccount instead means the mistake is caught at compile time, because you simply
+cannot put a fixed deposit into a List<Withdrawable>.

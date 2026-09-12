@@ -1,6 +1,6 @@
 public class StatementGenerator {
 
-    public String generate(BankAccount account) {
+    public String generate(Account account) {
         String statement = "---- Account Statement ----\n";
         statement = statement + "Account Number: " + account.getAccountNumber() + "\n";
         statement = statement + "Name: " + account.getName() + "\n";

@@ -1,40 +1,57 @@
+import java.util.ArrayList;
+import java.util.List;
+
 public class Main {
 
     public static void main(String[] args) {
         AccountRepository repository = new AccountRepository();
         NotificationService emailService = new EmailNotificationService();
-
         Bank bank = new Bank(emailService, repository);
 
-        BankAccount savings = new BankAccount(101, "Ravi", 20, 5000, "Savings");
-        BankAccount current = new BankAccount(102, "Meena", 30, 8000, "Current");
+        SavingsAccount savings = new SavingsAccount(101, "Ravi", 20, 5000);
+        CurrentAccount current = new CurrentAccount(102, "Meena", 30, 8000);
         SalaryAccount salary = new SalaryAccount(103, "Arjun", 25, 12000, "GreenLeaf Tech");
+        FixedDepositAccount fixedDeposit = new FixedDepositAccount(104, "Priya", 28, 50000, 12);
 
-        InterestPolicy savingsPolicy = new SavingsInterestPolicy();
-        InterestPolicy currentPolicy = new CurrentInterestPolicy();
-        InterestPolicy salaryPolicy = new SalaryInterestPolicy();
+        List<Account> allAccounts = new ArrayList<Account>();
+        allAccounts.add(savings);
+        allAccounts.add(current);
+        allAccounts.add(salary);
+        allAccounts.add(fixedDeposit);
 
-        bank.deposit(savings, 1000);
-        bank.withdraw(savings, 500);
-        bank.deposit(current, 2000);
-        bank.deposit(salary, 3000);
+        System.out.println("Deposit run for every account");
 
-        System.out.println();
-
-        bank.showInterest(savings, savingsPolicy);
-        bank.showInterest(current, currentPolicy);
-        bank.showInterest(salary, salaryPolicy);
+        for (Account account : allAccounts) {
+            bank.deposit(account, 1000);
+        }
 
         System.out.println();
-        System.out.println("Switching to SMS without changing Bank");
+        System.out.println("Interest run for every account");
 
-        Bank smsBank = new Bank(new SMSNotificationService(), repository);
-        smsBank.deposit(salary, 500);
+        bank.showInterest(savings, new SavingsInterestPolicy());
+        bank.showInterest(current, new CurrentInterestPolicy());
+        bank.showInterest(salary, new SalaryInterestPolicy());
+        bank.showInterest(fixedDeposit, new FixedDepositInterestPolicy());
+
+        System.out.println();
+        System.out.println("Nightly withdrawal job");
+
+        List<Withdrawable> withdrawableAccounts = new ArrayList<Withdrawable>();
+        withdrawableAccounts.add(savings);
+        withdrawableAccounts.add(current);
+        withdrawableAccounts.add(salary);
+
+        for (Withdrawable account : withdrawableAccounts) {
+            bank.withdraw(account, 500);
+        }
+
+        System.out.println("Job finished without any crash");
+        System.out.println("The fixed deposit was never added to the list, so it was never asked to withdraw");
 
         System.out.println();
 
         StatementGenerator statementGenerator = new StatementGenerator();
-        System.out.println(statementGenerator.generate(salary));
-        System.out.println("Salary credited by: " + salary.getCompanyName());
+        System.out.println(statementGenerator.generate(fixedDeposit));
+        System.out.println("Locked for " + fixedDeposit.getTermInMonths() + " months");
     }
 }

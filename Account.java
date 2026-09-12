@@ -1,22 +1,16 @@
-public class BankAccount {
+public abstract class Account {
 
     private int accountNumber;
     private String name;
     private int age;
     private double balance;
     private String accountType;
+    private double minimumBalance;
 
-    public BankAccount(int accountNumber, String name, int age, double balance, String accountType) {
+    public Account(int accountNumber, String name, int age, double balance, String accountType, double minimumBalance) {
         if (age < 18) {
             System.out.println("Age was below 18, correcting to 18");
             age = 18;
-        }
-
-        double minimumBalance;
-        if (accountType.equals("Savings")) {
-            minimumBalance = 500.0;
-        } else {
-            minimumBalance = 1000.0;
         }
 
         if (balance < minimumBalance) {
@@ -29,6 +23,7 @@ public class BankAccount {
         this.age = age;
         this.balance = balance;
         this.accountType = accountType;
+        this.minimumBalance = minimumBalance;
     }
 
     public boolean deposit(double amount) {
@@ -41,20 +36,13 @@ public class BankAccount {
         return true;
     }
 
-    public boolean withdraw(double amount) {
+    protected boolean takeMoneyOut(double amount) {
         if (amount <= 0) {
             System.out.println("Invalid withdrawal amount");
             return false;
         }
 
-        double minimumBalance;
-        if (this.accountType.equals("Savings")) {
-            minimumBalance = 500.0;
-        } else {
-            minimumBalance = 1000.0;
-        }
-
-        if (this.balance - amount < minimumBalance) {
+        if (this.balance - amount < this.minimumBalance) {
             System.out.println("Withdrawal would breach minimum balance");
             return false;
         }
