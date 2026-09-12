@@ -1,0 +1,29 @@
+Section 1 - SRP
+
+
+Q1. Reasons to change in the old BankAccount class
+
+1. Changes if the email provider changes (sendEmail uses SMTP directly).
+2. Changes if the database changes (saveToDatabase is written for MySQL).
+3. Changes if the statement format changes (printStatement decides the layout).
+4. Changes if the banking rules change (minimum balance, deposit and withdraw checks).
+5. Changes if the logging format changes (the transactionLog strings are built inside deposit and withdraw).
+
+So the one class had five different people who could ask for a change in it.
+
+
+Q2. Job description for BankAccount
+
+BankAccount should only keep the account details and change the balance safely when money is
+put in or taken out.
+
+
+Q5. Wrap-up
+
+I ended up with four classes. BankAccount holds the data and does deposit and withdraw,
+AccountRepository saves it, NotificationService sends the message and StatementGenerator builds
+the statement text. This is easier to test because I can check deposit and withdraw without a
+database or an email server being involved, so the test does not need any setup and it will not
+fail because of something unrelated. If the bank moves from MySQL to something else I only touch
+AccountRepository, and withdraw cannot break because of it. Each class is small enough that I can
+read it and know what it is supposed to do.
