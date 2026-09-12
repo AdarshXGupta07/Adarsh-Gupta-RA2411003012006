@@ -27,3 +27,33 @@ database or an email server being involved, so the test does not need any setup 
 fail because of something unrelated. If the bank moves from MySQL to something else I only touch
 AccountRepository, and withdraw cannot break because of it. Each class is small enough that I can
 read it and know what it is supposed to do.
+
+
+Section 2 - OCP
+
+
+Q1. What I would have to touch to add a 4th account type in InterestCalculator
+
+The old InterestCalculator has one method, calculate(String accountType, double balance),
+and the whole rate table is an if/else chain inside it.
+
+To add a Salary account there I would have to:
+- open InterestCalculator.java, which is already working and already tested,
+- add one more "else if (accountType.equals("Salary"))" branch before the else,
+- add the "return balance * 0.05;" line inside that branch,
+- retest Savings and Current again, because I edited the same method they run through.
+
+That is one existing file and one existing method changed for every new account type, and the
+else at the bottom quietly returns 0.0 if I spell the type wrong.
+
+
+Q5. Wrap-up for the Salary Account requirement
+
+Brand new files: SalaryAccount.java and SalaryInterestPolicy.java.
+Existing files I opened: only Main.java, to create the new account and pick its policy.
+Zero existing policy classes were changed - SavingsInterestPolicy and CurrentInterestPolicy were
+not opened at all, and the InterestPolicy interface stayed the same.
+
+The NotificationService change works the same way. Bank asks for a NotificationService in its
+constructor, so adding SMSNotificationService was a new file plus one line in Main, and nothing
+inside Bank had to move.
