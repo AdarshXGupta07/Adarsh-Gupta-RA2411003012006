@@ -1,29 +1,28 @@
 public abstract class Account {
 
-    private int accountNumber;
+    private int accNo;
     private String name;
     private int age;
     private double balance;
-    private String accountType;
-    private double minimumBalance;
+    private String type;
+    private double minBalance;
 
-    public Account(int accountNumber, String name, int age, double balance, String accountType, double minimumBalance) {
+    public Account(int accNo, String name, int age, double balance, String type, double minBalance) {
         if (age < 18) {
-            System.out.println("Age was below 18, correcting to 18");
+            System.out.println("Age below 18, setting it to 18");
             age = 18;
         }
-
-        if (balance < minimumBalance) {
-            System.out.println("Initial balance below minimum, correcting to " + minimumBalance);
-            balance = minimumBalance;
+        if (balance < minBalance) {
+            System.out.println("Balance below minimum, setting it to " + minBalance);
+            balance = minBalance;
         }
 
-        this.accountNumber = accountNumber;
+        this.accNo = accNo;
         this.name = name;
         this.age = age;
         this.balance = balance;
-        this.accountType = accountType;
-        this.minimumBalance = minimumBalance;
+        this.type = type;
+        this.minBalance = minBalance;
     }
 
     public boolean deposit(double amount) {
@@ -31,43 +30,41 @@ public abstract class Account {
             System.out.println("Invalid deposit amount");
             return false;
         }
-
-        this.balance = this.balance + amount;
+        balance += amount;
         return true;
     }
 
-    protected boolean takeMoneyOut(double amount) {
+    // protected, so only the accounts that really allow withdrawals expose it
+    protected boolean take(double amount) {
         if (amount <= 0) {
             System.out.println("Invalid withdrawal amount");
             return false;
         }
-
-        if (this.balance - amount < this.minimumBalance) {
+        if (balance - amount < minBalance) {
             System.out.println("Withdrawal would breach minimum balance");
             return false;
         }
-
-        this.balance = this.balance - amount;
+        balance -= amount;
         return true;
     }
 
-    public int getAccountNumber() {
-        return this.accountNumber;
+    public int getAccNo() {
+        return accNo;
     }
 
     public String getName() {
-        return this.name;
+        return name;
     }
 
     public int getAge() {
-        return this.age;
+        return age;
     }
 
     public double getBalance() {
-        return this.balance;
+        return balance;
     }
 
-    public String getAccountType() {
-        return this.accountType;
+    public String getType() {
+        return type;
     }
 }

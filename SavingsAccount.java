@@ -1,10 +1,17 @@
-public class SavingsAccount extends Account implements Withdrawable {
+public class SavingsAccount extends Account implements Depositable, Withdrawable, Transferable, StatementProvider {
 
-    public SavingsAccount(int accountNumber, String name, int age, double balance) {
-        super(accountNumber, name, age, balance, "Savings", 500.0);
+    public SavingsAccount(int accNo, String name, int age, double balance) {
+        super(accNo, name, age, balance, "Savings", 500.0);
     }
 
     public boolean withdraw(double amount) {
-        return takeMoneyOut(amount);
+        return take(amount);
+    }
+
+    public boolean transfer(Depositable to, double amount) {
+        if (!take(amount)) {
+            return false;
+        }
+        return to.deposit(amount);
     }
 }

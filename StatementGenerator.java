@@ -1,13 +1,13 @@
 public class StatementGenerator {
 
-    public String generate(Account account) {
-        String statement = "---- Account Statement ----\n";
-        statement = statement + "Account Number: " + account.getAccountNumber() + "\n";
-        statement = statement + "Name: " + account.getName() + "\n";
-        statement = statement + "Age: " + account.getAge() + "\n";
-        statement = statement + "Account Type: " + account.getAccountType() + "\n";
-        statement = statement + "Current Balance: Rs. " + account.getBalance() + "\n";
-        statement = statement + "---------------------------";
-        return statement;
+    public String generate(StatementProvider acc) {
+        String s = "---- Statement ----\n";
+        s += "Account: " + acc.getAccNo() + "\n";
+        s += "Name: " + acc.getName() + "\n";
+        s += "Age: " + acc.getAge() + "\n";
+        s += "Type: " + acc.getType() + "\n";
+        s += "Balance: Rs. " + acc.getBalance() + "\n";
+        s += "-------------------";
+        return s;
     }
 }

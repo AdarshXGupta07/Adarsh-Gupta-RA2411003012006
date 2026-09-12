@@ -1,13 +1,13 @@
-public class FixedDepositAccount extends Account {
+public class FixedDepositAccount extends Account implements Depositable, StatementProvider {
 
-    private int termInMonths;
+    private int months;
 
-    public FixedDepositAccount(int accountNumber, String name, int age, double balance, int termInMonths) {
-        super(accountNumber, name, age, balance, "Fixed Deposit", 0.0);
-        this.termInMonths = termInMonths;
+    public FixedDepositAccount(int accNo, String name, int age, double balance, int months) {
+        super(accNo, name, age, balance, "Fixed Deposit", 0.0);
+        this.months = months;
     }
 
-    public int getTermInMonths() {
-        return this.termInMonths;
+    public int getMonths() {
+        return months;
     }
 }

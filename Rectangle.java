@@ -11,15 +11,7 @@ public class Rectangle {
         this.height = height;
     }
 
-    public int getWidth() {
-        return this.width;
-    }
-
-    public int getHeight() {
-        return this.height;
-    }
-
     public int getArea() {
-        return this.width * this.height;
+        return width * height;
     }
 }

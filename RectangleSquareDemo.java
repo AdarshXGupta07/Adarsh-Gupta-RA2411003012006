@@ -1,15 +1,14 @@
 public class RectangleSquareDemo {
 
     public static void main(String[] args) {
-        Rectangle rectangle = new Rectangle();
-        rectangle.setWidth(10);
-        rectangle.setHeight(20);
-        System.out.println("Plain rectangle area: " + rectangle.getArea());
+        Rectangle r = new Rectangle();
+        r.setWidth(10);
+        r.setHeight(20);
+        System.out.println("Rectangle area: " + r.getArea());
 
-        Rectangle shape = new Square();
-        shape.setWidth(10);
-        shape.setHeight(20);
-        System.out.println("Expected area: 200");
-        System.out.println("Actual area: " + shape.getArea());
+        Rectangle sq = new Square();
+        sq.setWidth(10);
+        sq.setHeight(20);
+        System.out.println("Expected 200 but got " + sq.getArea());
     }
 }

@@ -83,9 +83,9 @@ of the code failing loudly.
 
 Q3. The crash from the loop
 
-The before folder has the broken version. Account has a normal withdraw, FixedDepositAccount
-extends it and overrides withdraw to throw UnsupportedOperationException. BeforeMain puts a
-SavingsAccount and a FixedDepositAccount in one List<Account> and withdraws from each one.
+First I wrote the broken version. Account had a normal withdraw, FixedDepositAccount extended it
+and overrode withdraw to throw UnsupportedOperationException, and a small main put a
+SavingsAccount and a FixedDepositAccount in one List<Account> and withdrew from each one.
 
 Output:
 
@@ -94,7 +94,7 @@ Withdrew Rs. 500.0 from account 101
 Exception in thread "main" java.lang.UnsupportedOperationException: Fixed deposits cannot be
 withdrawn early
         at FixedDepositAccount.withdraw(FixedDepositAccount.java:8)
-        at BeforeMain.main(BeforeMain.java:14)
+        at Main.main(Main.java:14)
 
 The savings withdrawal went through and then the loop died on the fixed deposit, so "Job
 finished" never printed. One bad account in the list killed the whole batch, and the accounts
@@ -111,3 +111,64 @@ the only way callers could protect themselves is by checking the real type or wr
 in try/catch, which is the design telling you the hierarchy is wrong. Leaving Withdrawable off
 FixedDepositAccount instead means the mistake is caught at compile time, because you simply
 cannot put a fixed deposit into a List<Withdrawable>.
+
+
+Section 4 - ISP + DIP
+
+
+Q1. ATM against the fat BankService interface
+
+The fat interface was BankService with deposit, withdraw, transfer, printStatement and
+applyForLoan. An ATM has to write all five methods to compile, even though it only ever does two
+of them.
+
+deposit          - needed, the machine takes cash in
+withdraw         - needed, the machine gives cash out
+transfer         - forced, an ATM does not move money between two accounts
+printStatement   - forced, an ATM has no statement of its own
+applyForLoan     - forced, an ATM has nothing to do with loans
+
+The three forced ones could only throw UnsupportedOperationException, so the ATM was compiling
+against promises it could never keep, and any code holding a BankService could call them and
+crash.
+
+
+Q3. Where Bank was tied to a concrete class
+
+Bank never built its own repository, it already took one in the constructor, but the type it was
+holding was the concrete AccountRepository class from Lab 1. So AccountRepository became an
+interface with save(Account) and find(int), the old printing version was renamed to
+InMemoryAccountRepository, and Bank now holds the interface type in its field and its
+constructor.
+
+
+Q4. Proving the swap
+
+Main builds the repository on one line:
+
+    AccountRepository repository = new FileAccountRepository("accounts.txt");
+
+Changing that one line to new InMemoryAccountRepository() switches the whole program over. Bank
+was not opened for the swap at all. With the file store, accounts.txt came out as:
+
+101,Ravi,3500.0
+102,Meena,10500.0
+103,Arjun,12500.0
+104,Priya,51000.0
+
+and reading account 101 back gave 101,Ravi,3500.0.
+
+
+Q5. Wrap-up on the whole four labs
+
+Say the bank asks for a WhatsAppNotificationService tomorrow. I create one new file,
+WhatsAppNotificationService, make it implement NotificationService with its own send method, and
+then change the single line in Main that decides which notifier goes into the Bank constructor.
+That is one new file and one line, and Bank, the accounts, the policies and the repositories are
+never opened. A MongoAccountRepository is the same story, one new class implementing
+AccountRepository and one line in Main. In the Lab 1 version all of this lived inside
+BankAccount, so a new notification channel meant editing the same class that holds deposit and
+withdraw, and every account operation had to be retested because the file they live in had
+changed. That is exactly what the manager was complaining about at the start, that touching email
+kept breaking withdrawals. The work went from editing the one class everything depends on to
+adding a small class beside it.

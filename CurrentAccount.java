@@ -1,10 +1,17 @@
-public class CurrentAccount extends Account implements Withdrawable {
+public class CurrentAccount extends Account implements Depositable, Withdrawable, Transferable, StatementProvider {
 
-    public CurrentAccount(int accountNumber, String name, int age, double balance) {
-        super(accountNumber, name, age, balance, "Current", 1000.0);
+    public CurrentAccount(int accNo, String name, int age, double balance) {
+        super(accNo, name, age, balance, "Current", 1000.0);
     }
 
     public boolean withdraw(double amount) {
-        return takeMoneyOut(amount);
+        return take(amount);
+    }
+
+    public boolean transfer(Depositable to, double amount) {
+        if (!take(amount)) {
+            return false;
+        }
+        return to.deposit(amount);
     }
 }
